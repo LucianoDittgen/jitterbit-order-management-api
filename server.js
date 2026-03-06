@@ -3,10 +3,17 @@ const mongoose = require("mongoose");
 const orderController = require("./controllers/orderController");
 require("dotenv").config();
 
+// Configuração do Swagger
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
 const app = express();
 
 // Middlewares
 app.use(express.json());
+
+// Rota da Documentação (Swagger)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rotas da API
 app.post("/order", orderController.createOrder);
