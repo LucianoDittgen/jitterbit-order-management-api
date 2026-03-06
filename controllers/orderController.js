@@ -17,12 +17,13 @@ exports.createOrder = async (req, res) => {
 
     const newOrder = new Order(mappedData);
 
-    newOrder.save();
-
+    // Agora sim, com await e sem caracteres sobrando no final da resposta
+    const savedOrder = await newOrder.save();
     res
       .status(201)
-      .json({ message: "Pedido criado com sucesso", order: newOrder });
+      .json({ message: "Pedido criado com sucesso", order: savedOrder });
   } catch (error) {
+    // Bloco catch adicionado para capturar erros do banco de dados (como um orderId duplicado)
     res
       .status(500)
       .json({ error: "Erro interno ao criar pedido", details: error.message });
