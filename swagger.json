@@ -3,7 +3,7 @@
   "info": {
     "title": "Jitterbit API - Order Management",
     "version": "1.0.0",
-    "description": "API desenvolvida para o teste teórico da Jitterbit. Gerencia a criação, leitura, atualização e exclusão de pedidos."
+    "description": "API desenvolvida para o teste teórico da Jitterbit. Gerencia pedidos com mapeamento de dados e autenticação JWT."
   },
   "servers": [
     {
@@ -11,11 +11,30 @@
       "description": "Servidor Local"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Insira o token JWT gerado na rota /login"
+      }
+    }
+  },
   "paths": {
+    "/login": {
+      "post": {
+        "summary": "Gera um token JWT para autenticação",
+        "description": "Endpoint mockado para gerar credencial de acesso às rotas protegidas.",
+        "responses": {
+          "200": { "description": "Token gerado com sucesso" }
+        }
+      }
+    },
     "/order": {
       "post": {
         "summary": "Cria um novo pedido",
-        "description": "Recebe o payload original e faz o mapping para salvar no banco de dados.",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -37,28 +56,31 @@
         },
         "responses": {
           "201": { "description": "Pedido criado com sucesso" },
-          "500": { "description": "Erro interno ao criar pedido" }
+          "401": { "description": "Acesso negado. Token não fornecido ou inválido." }
         }
       }
     },
     "/order/list": {
       "get": {
         "summary": "Lista todos os pedidos",
+        "security": [{ "bearerAuth": [] }],
         "responses": {
-          "200": { "description": "Lista de pedidos retornada com sucesso" }
+          "200": { "description": "Lista de pedidos retornada com sucesso" },
+          "401": { "description": "Acesso negado." }
         }
       }
     },
     "/order/{id}": {
       "get": {
         "summary": "Busca um pedido pelo ID",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "required": true,
             "schema": { "type": "string" },
-            "description": "O orderId do pedido (ex: v10089015vdb-01)"
+            "description": "O orderId do pedido"
           }
         ],
         "responses": {
@@ -68,6 +90,7 @@
       },
       "put": {
         "summary": "Atualiza um pedido existente",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -80,9 +103,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "example": {
-                "value": 15000
-              }
+              "example": { "value": 15000 }
             }
           }
         },
@@ -93,6 +114,7 @@
       },
       "delete": {
         "summary": "Deleta um pedido pelo ID",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",

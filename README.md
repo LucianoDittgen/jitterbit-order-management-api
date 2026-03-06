@@ -19,3 +19,12 @@ Clone o repositório e instale as bibliotecas necessárias:
 ```bash
 # Baixe as dependências do Node
 npm install
+
+## 🔐 Autenticação (JWT)
+Todas as rotas de gerenciamento de pedidos (`/order`) são protegidas e requerem autenticação.
+
+1. Faça uma requisição `POST` para a rota `/login` (nenhum payload é necessário).
+2. Copie o `token` retornado no JSON de resposta.
+3. Para testar via API cliente (Postman, Insomnia, curl), adicione o token ao cabeçalho da requisição:
+   `Authorization: Bearer <SEU_TOKEN_GERADO>`
+4. Para testar via **Swagger**, clique no botão **"Authorize"** no topo da página e cole o token.
