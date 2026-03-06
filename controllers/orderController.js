@@ -17,13 +17,11 @@ exports.createOrder = async (req, res) => {
 
     const newOrder = new Order(mappedData);
 
-    // Agora sim, com await e sem caracteres sobrando no final da resposta
     const savedOrder = await newOrder.save();
     res
       .status(201)
       .json({ message: "Pedido criado com sucesso", order: savedOrder });
   } catch (error) {
-    // Bloco catch adicionado para capturar erros do banco de dados (como um orderId duplicado)
     res
       .status(500)
       .json({ error: "Erro interno ao criar pedido", details: error.message });
@@ -43,4 +41,59 @@ exports.getOrderById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Erro ao buscar pedido" });
   }
+  // Listar todos os pedidos
+  exports.listOrders = async (req, res) => {
+    try {
+      const orders = await Order.find();
+      res.status(200).json(orders);
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao listar pedidos" });
+    }
+  };
+
+  // Atualizar pedido
+  exports.updateOrder = async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const updateData = req.body;
+
+      const updatedOrder = await Order.findOneAndUpdate(
+        { orderId: orderId },
+        updateData,
+        { new: true },
+      );
+
+      if (!updatedOrder) {
+        return res
+          .status(404)
+          .json({ message: "Pedido não encontrado para atualização" });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Pedido atualizado", order: updatedOrder });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Erro ao atualizar pedido", details: error.message });
+    }
+  };
+
+  // Deletar pedido
+  exports.deleteOrder = async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const deletedOrder = await Order.findOneAndDelete({ orderId: orderId });
+
+      if (!deletedOrder) {
+        return res
+          .status(404)
+          .json({ message: "Pedido não encontrado para deleção" });
+      }
+
+      res.status(200).json({ message: "Pedido deletado com sucesso" });
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao deletar pedido" });
+    }
+  };
 };
